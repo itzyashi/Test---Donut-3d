@@ -1,40 +1,80 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Test Donut</title>
-  <style>
-    body {
-      margin: 0;
-      overflow: hidden;
-      background: #f6c77a;
-    }
-    canvas {
-      display: block;
-    }
-    .label {
-      position: absolute;
-      top: 20px;
-      left: 20px;
-      color: white;
-      font-family: Arial, sans-serif;
-      font-size: 18px;
-      letter-spacing: 2px;
-      text-shadow: 0 2px 8px rgba(0,0,0,0.25);
-    }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Donut</title>
+<style>
+body{
+  margin:0;
+  overflow:hidden;
+  background:#f6c77a;
+}
+.label{
+  position:absolute;
+  top:20px;
+  left:20px;
+  color:white;
+  font-family:Arial;
+  font-size:20px;
+  z-index:10;
+}
+</style>
 </head>
 <body>
+
 <div class="label">🍩 Glossy Donut</div>
 
 <script type="module">
-import * as THREE from "https://unpkg.com/three@0.158.0/build/three.module.js";
-import { OrbitControls } from 'https://cdn.jsdelivr.net/npm/three@0.158/examples/jsm/controls/OrbitControls.js';
+import * as THREE from 'https://unpkg.com/three@0.158.0/build/three.module.js';
 
 const scene = new THREE.Scene();
 scene.background = new THREE.Color(0xf6c77a);
 
+const camera = new THREE.PerspectiveCamera(60, innerWidth/innerHeight, 0.1, 100);
+camera.position.set(0,2,6);
+
+const renderer = new THREE.WebGLRenderer({antialias:true});
+renderer.setSize(innerWidth, innerHeight);
+document.body.appendChild(renderer.domElement);
+
+// Lights
+scene.add(new THREE.AmbientLight(0xffffff,1.2));
+
+const light = new THREE.DirectionalLight(0xffffff,2);
+light.position.set(5,5,5);
+scene.add(light);
+
+// Donut
+const donut = new THREE.Mesh(
+  new THREE.TorusGeometry(1.5,0.6,32,100),
+  new THREE.MeshPhysicalMaterial({
+    color:0xff7eb6,
+    roughness:0.15,
+    clearcoat:1,
+    clearcoatRoughness:0.05
+  })
+);
+
+scene.add(donut);
+
+// Animate
+function animate(){
+  requestAnimationFrame(animate);
+  donut.rotation.y += 0.01;
+  renderer.render(scene,camera);
+}
+animate();
+
+window.addEventListener('resize',()=>{
+  camera.aspect = innerWidth/innerHeight;
+  camera.updateProjectionMatrix();
+  renderer.setSize(innerWidth, innerHeight);
+});
+</script>
+
+</body>
+</html>
 // Camera
 const camera = new THREE.PerspectiveCamera(
   55,
